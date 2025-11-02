@@ -37,7 +37,7 @@ t_statistic
 ```
 
 ### **Scenario Conclusion**
-The calculated t-statistic is extremely large and negative (e.g., -23.7). The corresponding p-value is effectively zero, which is less than α=0.05.
+The calculated t-statistic is extremely large and negative (e.g., -28.09). The corresponding p-value is effectively zero, which is less than α=0.05.
 
 **Therefore, we reject the null hypothesis.** There is a statistically significant difference in the average completion time between Model A and Model B under these conditions.
 
@@ -103,7 +103,7 @@ t_statistic
 ```
 
 ### **Scenario Conclusion**
-Even with different standard deviations, the calculated t-statistic is large and negative (e.g., -17.2). The p-value is less than α=0.05.
+Even with different standard deviations, the calculated t-statistic is large and negative (e.g., -15.83). The p-value is less than α=0.05.
 
 **Therefore, we reject the null hypothesis.** The significant difference persists when using the more conservative Welch's test, reinforcing the result's robustness.
 
@@ -134,7 +134,7 @@ t_statistic
 ```
 
 ### **Scenario Conclusion**
-The calculated t-statistic remains large and negative (e.g., -17.5). The p-value is less than α=0.05.
+The calculated t-statistic remains large and negative (e.g., -16.85). The p-value is less than α=0.05.
 
 **Therefore, we reject the null hypothesis.** The result is consistent across all tested scenarios.
 
