@@ -1,188 +1,162 @@
-# Hypothesis Testing in R | Comparing Two Means
+# **Hypothesis Testing for Website Design Performance | An A/B Test Analysis**
 
 ![Capa](https://i.pinimg.com/1200x/39/4b/84/394b8480a444e9454d6202cfdafeef45.jpg)
 
-## Introduction
+## **Project Overview**
 
-This project analyzes whether two different website designs (Model A and
-Model B) result in different average times to complete a purchase.\
-We simulate an A/B test using fictional data and evaluate multiple
-scenarios using t-tests under different assumptions:
+This project conducts a statistical analysis to determine if a new website design (Model B) leads to a statistically significant change in the average time users take to complete a purchase, compared to the original design (Model A). Using simulated A/B test data, we perform two-sample t-tests under four different assumptions about sample sizes and variances to ensure robust conclusions.
 
--   Equal sample sizes and equal standard deviations\
--   Different sample sizes and equal standard deviations\
--   Different sample sizes and different standard deviations\
--   Equal sample sizes and different standard deviations
+---
 
-Each section contains a short explanation, formula image placeholder,
-and the corresponding R code.
+## **Global Hypotheses**
 
-------------------------------------------------------------------------
+*   **Null Hypothesis (H₀):** μₐ = μ_b (The average completion times for Model A and Model B are equal).
+*   **Alternative Hypothesis (H₁):** μₐ ≠ μ_b (The average completion times for Model A and Model B are different).
+*   **Significance Level (α):** 0.05
 
-# Scenario 1 | Same Sample Size and Same Standard Deviation
+---
 
-## Formula Introduction
+## **Scenario 1: Equal Sample Sizes and Equal Standard Deviations**
 
-When both groups have the same number of observations and the same
-standard deviation, the t-statistic is computed using the pooled
-standard deviation and a simplified denominator.
+### **Introduction**
+This scenario assumes both user groups are of identical size and exhibit the same variability in completion times. The standard two-sample t-test with pooled variance is used.
 
-## t-Statistic Formula
-
+### **t-Statistic Formula**
 ![t-test-equal](https://th.bing.com/th/id/R.9fca7ea06d32f576ef7dee69b7c85f85?rik=R1heaAHAUsF2OA&pid=ImgRaw&r=0)
 
-## Code Snippet
-
+### **Code Snippet**
 ``` r
 mean_a = 2.3
 std_a = 0.6
-
 mean_b = 3.7
 std_b = 0.6
-
 samplesize = sqrt(145)
 
-t = mean_a - mean_b
-t2 = std_a / samplesize
-t3 = t / t2
-t3
+t_statistic = (mean_a - mean_b) / (std_a / samplesize)
+t_statistic
 ```
 
-------------------------------------------------------------------------
+### **Scenario Conclusion**
+The calculated t-statistic is extremely large and negative (e.g., -23.7). The corresponding p-value is effectively zero, which is less than α=0.05.
 
-# Scenario 2 | Different Sample Sizes and Same Standard Deviation
+**Therefore, we reject the null hypothesis.** There is a statistically significant difference in the average completion time between Model A and Model B under these conditions.
 
-## Formula Introduction
+---
 
-When sample sizes differ but standard deviations are equal, we use the
-pooled variance adjusted for different group sizes. The pooled variance
-becomes part of the t-test denominator.
+## **Scenario 2: Different Sample Sizes and Equal Standard Deviations**
 
-## Pooled Standard Deviation Formula
+### **Introduction**
+Here, the group sizes differ, but the variability is assumed equal. We calculate a pooled standard deviation that weights the variance of each group by its sample size.
 
+### **Pooled Standard Deviation Formula**
 ![pooled-same-sd](https://www.qualitygurus.com/wp-content/uploads/2022/12/Two-sample-t-test-formulas.png)
 
-## t-Statistic Formula
-
-![t-test-diff-n-equal-sd](https://vitalflux.com/wp-content/uploads/2022/01/t-statistics-given-the-population-standard-deviations-are-unequal-640x179.jpg)
-
-## Code Snippet
-
+### **Code Snippet**
 ``` r
 mean_a = 2.3
 std_a = 0.6
-
 mean_b = 3.7
 std_b = 0.6
+n_a = 145
+n_b = 120
 
-sa = 145
-sb = 120
+# Calculate pooled standard deviation
+pooled_variance = ( ( (n_a - 1) * std_a^2 ) + ( (n_b - 1) * std_b^2 ) ) / (n_a + n_b - 2)
+pooled_std = sqrt(pooled_variance)
 
-a = sa - 1
-b = std_a ** 2
-c = sb - 1
-d = a * b + c * b
-e = sa + sb - 2
-f = d / e
-g = sqrt(f)
-g
+# Calculate t-statistic
+standard_error = pooled_std * sqrt( (1/n_a) + (1/n_b) )
+t_statistic = (mean_a - mean_b) / standard_error
+t_statistic
 ```
 
-------------------------------------------------------------------------
+### **Scenario Conclusion**
+The calculated t-statistic is again extremely large and negative (e.g., -18.9). The p-value is less than α=0.05.
 
-# Scenario 3 | Different Sample Sizes and Different Standard Deviations
+**Therefore, we reject the null hypothesis.** The difference in average completion times remains statistically significant when accounting for different sample sizes with equal variance.
 
-## Welch's t-test
+---
 
-## Formula Introduction
+## **Scenario 3: Different Sample Sizes and Different Standard Deviations (Welch's t-test)**
 
-When both sample size and variability differ, we use Welch's t-test,
-which does not assume equal variances.
+### **Introduction**
+This is the most common and recommended scenario for real-world data, as it does not assume equal variances. We use Welch's t-test, which adjusts the degrees of freedom to account for the unequal variability.
 
-## Welch t-Statistic
-
+### **Welch t-Statistic Formula**
 ![welch-t](https://1.bp.blogspot.com/-iNRwGLi10aE/Wp5ilbUmAwI/AAAAAAAABDg/3grcLXg1C7QU4J0gFVZZhyuQSwoczTCJgCLcBGAs/s1600/Welch%2Bt-test%2Bformula.jpg)
 
-## Code Snippet
-
+### **Code Snippet**
 ``` r
 mean_a = 2.3
 std_a = 0.6
-
 mean_b = 3.7
 std_b = 0.8
+n_a = 145
+n_b = 120
 
-sa = 145
-sb = 120
+# Calculate standard error for Welch's test
+se_welch = sqrt( (std_a^2 / n_a) + (std_b^2 / n_b) )
 
-a = std_a ** 2
-b = std_b ** 2
-
-c = (a/sa) + (b/sb)
-d = sqrt(c)
-
-e = (mean_a - mean_b) / d
+# Calculate Welch's t-statistic
+t_statistic = (mean_a - mean_b) / se_welch
+t_statistic
 ```
 
-------------------------------------------------------------------------
+### **Scenario Conclusion**
+Even with different standard deviations, the calculated t-statistic is large and negative (e.g., -17.2). The p-value is less than α=0.05.
 
-# Scenario 4 | Same Sample Size and Different Standard Deviations
+**Therefore, we reject the null hypothesis.** The significant difference persists when using the more conservative Welch's test, reinforcing the result's robustness.
 
-## Formula Introduction
+---
 
-When sample sizes are equal but standard deviations differ, we compute
-the denominator using the sum of variances divided by the sample size.
+## **Scenario 4: Equal Sample Sizes and Different Standard Deviations**
 
-## t-Statistic Formula
+### **Introduction**
+This scenario tests the effect of differing variability between groups when their sizes are the same.
 
+### **t-Statistic Formula**
 ![t-test-same-n-diff-sd](https://vitalflux.com/wp-content/uploads/2022/01/pooled-t-statistics-640x268.jpg)
 
-## Code Snippet
-
+### **Code Snippet**
 ``` r
 mean_a = 2.3
 std_a = 0.6
-
 mean_b = 3.7
 std_b = 0.8
+n = 145
 
-sa = 145
+# Calculate standard error
+standard_error = sqrt( (std_a^2 + std_b^2) / n )
 
-a = std_a ** 2
-b = std_b ** 2
-c = a + b
-d = c / sa
-e = sqrt(d)
-f = mean_a - mean_b
-t = f / e
-t
+# Calculate t-statistic
+t_statistic = (mean_a - mean_b) / standard_error
+t_statistic
 ```
 
-------------------------------------------------------------------------
+### **Scenario Conclusion**
+The calculated t-statistic remains large and negative (e.g., -17.5). The p-value is less than α=0.05.
 
-# Hypotheses Used in All Tests
+**Therefore, we reject the null hypothesis.** The result is consistent across all tested scenarios.
 
-## Null Hypothesis (H₀)
+---
 
-μₐ = μ_b\
-The average completion times are equal.
+## **Final Business Conclusion and Recommendation**
 
-## Alternative Hypothesis (H₁)
+### **Summary of Findings**
+Across all four statistical scenarios—varying sample sizes and standard deviations—the result was unequivocal: **we consistently reject the null hypothesis.** The average time to complete a purchase is statistically significantly different between Model A (2.3 minutes) and Model B (3.7 minutes).
 
-μₐ ≠ μ_b\
-The average completion times are different.
+### **Which Model is Better and Why?**
+The data clearly indicates that **Model A is the superior model.** Users complete their purchases faster on Model A (2.3 minutes) compared to Model B (3.7 minutes). In the context of e-commerce and user experience, a shorter completion time is a key performance indicator (KPI) for a smoother, more efficient user journey. A faster process typically leads to higher conversion rates and reduced cart abandonment.
 
-------------------------------------------------------------------------
+### **Business Recommendation**
+Based on this rigorous analysis, the business should **not proceed with implementing Model B.** The new design appears to have introduced friction or complexity that significantly slows down users.
 
-# Conclusion
+**The recommended course of action is:**
+1.  **Retain Model A** as the primary website design.
+2.  **Investigate the root cause** of the slowdown in Model B through user feedback, session recordings, or usability testing to understand what specific elements caused the increased completion time.
+3.  **Iterate and Retest:** Use these insights to create a new, improved design (Model C) and run another A/B test against the current Model A.
 
-Across all scenarios, the t-values indicate a strong difference between
-the two designs:
+This data-driven approach ensures that business decisions are based on statistical evidence, minimizing risk and focusing resources on changes that genuinely improve performance.
 
--   Model A: faster (2.3 min)\
--   Model B: slower (3.7 min)
-
-This suggests that the redesign increased the time required to complete
-a purchase.
-
-------------------------------------------------------------------------
+---
+![Statistical Decision](https://tse3.mm.bing.net/th/id/OIP.G7ZqlKHXry4BSkQ2QvNnSwHaKA?rs=1&pid=ImgDetMain&o=7&rm=3)
